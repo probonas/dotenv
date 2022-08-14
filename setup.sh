@@ -3,9 +3,11 @@
 # install packages listed in packages file
 apt install -y $(cat packages | xargs)
 
-mv --backup=numbered ~/.vimrc ~/vimrc
+function vim() {
+    apt-get install -y vim
+    mv --backup=numbered ~/.vimrc ~/vimrc
 
-cat > ~/.vimrc<<EOF
+    cat > ~/.vimrc<<EOF
 " encoding dectection
 set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
 
@@ -52,12 +54,17 @@ set shiftwidth=4                                                    " indent wid
 set expandtab                                                       " expand tab to space
 EOF
 
-# install oh-my-zsh
-yes | sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    echo "Successfully updated ~/.vimrc!"
+}
 
-mv --backup=numbered ~/.zshrc ~/zshrc
+function zsh(){
+    apt-get install -y wget zsh
+    # install oh-my-zsh
+    yes | sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-cat > ~/.zshrc<<EOF
+    mv --backup=numbered ~/.zshrc ~/zshrc
+
+    cat > ~/.zshrc<<EOF
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -100,16 +107,37 @@ export EDITOR='vim'
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 EOF
+    echo "Successfully updated ~/.zshrc"
+    
+    # set zsh as default shell
+    chsh -s $(which zsh)
+}
 
-# install fuzzy finder 
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-yes | ~/.fzf/install
+function fzf() {
+    # install fuzzy finder 
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    yes | ~/.fzf/install
+}
 
-# install the latest thefuck from pypi
-pip3 install thefuck
+function fuck() {
+    apt-get install -y python3-dev python3-pip python3-setuptools
+    # install the latest thefuck from pypi
+    pip3 install thefuck
 
-echo "excluded_search_path_prefixes = ['/mnt/']" >> ~/.config/thefuck/settings.py
+    # wsl specific option
+    echo "excluded_search_path_prefixes = ['/mnt/']" >> ~/.config/thefuck/settings.py
+}
 
-# set zsh as default shell
-chsh -s $(which zsh)
+if [ $# -eq 0 ]
+then
+    TOOLS=(vim zsh fzf fuck)
+else
+    TOOLS=("$@")
+fi
 
+echo "${TOOLS[*]}"
+
+for i in "${TOOLS[@]}"
+do
+    $i
+done
