@@ -57,7 +57,7 @@ EOF
     echo "Successfully updated ~/.vimrc!"
 }
 
-function zsh(){
+function zsh() {
     apt-get install -y wget zsh
     # install oh-my-zsh
     yes | sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -128,9 +128,33 @@ function fuck() {
     echo "excluded_search_path_prefixes = ['/mnt/']" >> ~/.config/thefuck/settings.py
 }
 
+function lazygit() {
+    # download and install go
+    wget https://go.dev/dl/go1.19.linux-amd64.tar.gz
+
+    # verify sum
+    sha256sum go1.19.linux-amd64.tar.gz | grep 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
+    if [ $? -eq 1 ]; then
+        echo "sha256sum check failed"
+        exit 1
+    fi
+
+    rm -rf /usr/local/go
+    tar -C /usr/local -xvzf go1.19.linux-amd64.tar.gz
+    rm go1.19.linux-amd64.tar.gz
+
+    cp --backup=numbered ~/.zshrc ~/zshrc
+    cat >>~/.zshrc<<EOF
+export PATH='$PATH':/usr/local/go/bin:~/go/bin
+alias lg='lazygit'
+EOF
+    PATH=$PATH:/usr/local/go/bin
+    go install github.com/jesseduffield/lazygit@latest
+}
+
 if [ $# -eq 0 ]
 then
-    TOOLS=(vim zsh fzf fuck)
+    TOOLS=(vim zsh fzf fuck lazygit)
 else
     TOOLS=("$@")
 fi
