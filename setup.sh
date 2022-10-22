@@ -108,13 +108,13 @@ export EDITOR='vim'
 # export ARCHFLAGS="-arch x86_64"
 EOF
     echo "Successfully updated ~/.zshrc"
-    
+
     # set zsh as default shell
     chsh -s $(which zsh)
 }
 
 function fzf() {
-    # install fuzzy finder 
+    # install fuzzy finder
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     yes | ~/.fzf/install
 }
