@@ -130,18 +130,18 @@ function fuck() {
 
 function lazygit() {
     # download and install go
-    wget https://go.dev/dl/go1.19.linux-amd64.tar.gz
+    wget https://go.dev/dl/go1.19.1.linux-amd64.tar.gz
 
     # verify sum
-    sha256sum go1.19.linux-amd64.tar.gz | grep 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
+    sha256sum go1.19.1.linux-amd64.tar.gz | grep acc512fbab4f716a8f97a8b3fbaa9ddd39606a28be6c2515ef7c6c6311acffde
     if [ $? -eq 1 ]; then
         echo "sha256sum check failed"
         exit 1
     fi
 
     rm -rf /usr/local/go
-    tar -C /usr/local -xvzf go1.19.linux-amd64.tar.gz
-    rm go1.19.linux-amd64.tar.gz
+    tar -C /usr/local -xvzf go1.19.1.linux-amd64.tar.gz
+    rm go1.19.1.linux-amd64.tar.gz
 
     cp --backup=numbered ~/.zshrc ~/zshrc
     cat >>~/.zshrc<<EOF
