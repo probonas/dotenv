@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# install packages listed in packages file
-apt install -y $(cat packages | xargs)
+function packages() {
+    # install packages listed in packages file
+    apt install -y $(cat packages | xargs)
+}
 
 function vim() {
-    apt-get install -y vim
     mv --backup=numbered ~/.vimrc ~/vimrc
 
     cat > ~/.vimrc<<EOF
@@ -58,7 +59,6 @@ EOF
 }
 
 function zsh() {
-    apt-get install -y wget zsh
     # install oh-my-zsh
     yes | sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
@@ -113,6 +113,14 @@ EOF
     chsh -s $(which zsh)
 }
 
+function poetry() {
+    # https://github.com/pypa/pipx#on-linux-install-via-pip-requires-pip-190-or-later
+    curl -sSL https://install.python-poetry.org | python3 -
+    cat >>~/.zshrc<<EOF
+export PATH=$(echo '$PATH'):~/.local/bin
+EOF
+}
+
 function fzf() {
     # install fuzzy finder
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -120,7 +128,6 @@ function fzf() {
 }
 
 function fuck() {
-    apt-get install -y python3-dev python3-pip python3-setuptools
     # install the latest thefuck from pypi
     pip3 install thefuck
 
@@ -145,7 +152,7 @@ function lazygit() {
 
     cp --backup=numbered ~/.zshrc ~/zshrc
     cat >>~/.zshrc<<EOF
-export PATH='$PATH':/usr/local/go/bin:~/go/bin
+export PATH=$(echo '$PATH'):/usr/local/go/bin:~/go/bin
 alias lg='lazygit'
 EOF
     PATH=$PATH:/usr/local/go/bin
@@ -154,7 +161,7 @@ EOF
 
 if [ $# -eq 0 ]
 then
-    TOOLS=(vim zsh fzf fuck lazygit)
+    TOOLS=(packages vim zsh fzf fuck lazygit pipx)
 else
     TOOLS=("$@")
 fi
